@@ -1,25 +1,41 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import CardDisplay from './CardDisplay'
 
 class App extends Component {
+  state ={
+    loading:false,
+    data:[],
+  }
+
+  componentDidMount(){
+    fetch("https://www.hatchways.io/api/assessment/students")
+    .then((res)=> {return res.json()})
+    .then((res) => {
+      const tagdata = res.students
+      tagdata.forEach(s=>{
+        s.tags = []
+      })
+      this.setState({data:tagdata})
+    })
+  }
+
+  handleTags=(tag,id)=>{
+    const newState = [...this.state.data]
+    newState.forEach(p=>{
+      if (p.id === id){
+          p.tags.push(tag)
+      }
+    })
+    this.setState({
+     data:newState
+    })
+    
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <CardDisplay handleTags={this.handleTags}students={this.state.data}/>
       </div>
     );
   }
